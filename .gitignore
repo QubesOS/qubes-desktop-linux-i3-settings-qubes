@@ -1,5 +1,5 @@
 rpm/
 srpm/
 pkgs/
-*/*.tar.gz
-*/*.tar.bz2
+*.tar.gz
+*.tar.bz2

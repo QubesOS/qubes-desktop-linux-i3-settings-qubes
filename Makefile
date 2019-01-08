@@ -2,6 +2,8 @@
 # Common Makefile for building RPMs
 #
 
+SPECFILE := i3-settings-qubes.spec
+
 WORKDIR := $(CURDIR)
 SPECDIR ?= $(WORKDIR)
 SRCRPMDIR ?= $(WORKDIR)/../srpm
@@ -9,16 +11,11 @@ BUILDDIR ?= $(WORKDIR)
 RPMDIR ?= $(WORKDIR)/../rpm
 SOURCEDIR := $(WORKDIR)
 
-
 RPM_DEFINES := --define "_sourcedir $(SOURCEDIR)" \
                --define "_specdir $(SPECDIR)" \
                --define "_builddir $(BUILDDIR)" \
                --define "_srcrpmdir $(SRCRPMDIR)" \
                --define "_rpmdir $(RPMDIR)"
-
-help:
-	@echo "make rpms        -- generate binary rpm packages"
-	@echo "make srpms       -- generate source rpm packages"
 
 DIST_DOM0 ?= fc20
 
@@ -31,6 +28,10 @@ ifdef URL
 	SRC_FILE := $(notdir $(URL))
 endif
 endif
+
+help:
+	@echo "make rpms        -- generate binary rpm packages"
+	@echo "make srpms       -- generate source rpm packages"
 
 get-sources: $(SRC_FILE)
 
