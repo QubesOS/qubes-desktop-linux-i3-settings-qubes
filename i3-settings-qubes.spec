@@ -1,7 +1,3 @@
-%if 0%{?qubes_builder}
-%define _sourcedir %(pwd)/i3-settings-qubes
-%endif
-
 Name:       i3-settings-qubes
 Version:    1.5
 Release:    1%{?dist}
