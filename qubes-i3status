@@ -80,7 +80,26 @@ status_qubes() {
 }
 
 status_disk() {
-    local disk=`df -h / | tail -n 1 | awk '{print $4}'`
+    local disk=''
+    local free=''
+    local size=''
+    local usage=''
+    read size usage <<< $(qvm-pool -i lvm | grep 'size\|usage' | sort | awk '{print $2}')
+    free=$(($size - $usage))
+    case ${#free} in
+        1[3-5])
+            disk="$(($free / 1099511627776))T" ;;
+        1[0-2])
+            disk="$(($free / 1073741824))G" ;;
+        [7-9])
+            disk="$(($free / 1048576))M" ;;
+        [4-6])
+            disk="$(($free / 1024))K" ;;
+        [1-3])
+            disk="$free Bytes" ;;
+        *)
+            disk="Error" ;;
+    esac
     json disk "Disk free: $disk"
 }
 
