@@ -22,59 +22,59 @@ font pango:DejaVu Sans Mono 8
 # X core fonts rendering does not support right-to-left and this being a bitmap
 # font, it doesn’t scale on retina/hidpi displays.
 
-client.background	dom0		#121212
-client.focused		dom0	#522702 #522702 #ffffff #a6907d
-client.focused_inactive	dom0	#522702 #361a01 #ffffff #a6907d
-client.unfocused	dom0	#522702 #361a01 #999999 #a6907d
-client.urgent		dom0	#666666 #a6907d #ce0000 #a6907d
+client.background       dom0            #c4c4c4
+client.focused          dom0    #f7f7f7 #f5f5f5 #000000 #0a0a0a
+client.focused_inactive dom0    #f7f7f7 #dcdcdc #191919 #232323
+client.unfocused        dom0    #f7f7f7 #c4c4c4 #323232 #3b3b3b
+client.urgent           dom0    #bd2727 #e79e27 #333333 #27bdbd
 
-client.background	red		#121212
-client.focused		red	#e53b27 #e53b27 #ffffff #f19b90
-client.focused_inactive	red	#e53b27 #902519 #ffffff #f19b90
-client.unfocused	red	#e53b27 #902519 #999999 #f19b90
-client.urgent		red	#e53b27 #f19b90 #ce0000 #f19b90
+client.background       red             #841b1b
+client.focused          red     #d06767 #bd2727 #ffffff #27bdbd
+client.focused_inactive red     #d06767 #971f1f #e5e5e5 #1f9797
+client.unfocused        red     #d06767 #841b1b #cccccc #1b8484
+client.urgent           red     #bd2727 #e79e27 #333333 #27bdbd
 
-client.background	orange		#121212
-client.focused		orange	#d05f03 #d05f03 #ffffff #daa67e
-client.focused_inactive	orange	#d05f03 #7b3702 #ffffff #daa67e
-client.unfocused	orange	#d05f03 #7b3702 #999999 #daa67e
-client.urgent		orange	#d05f03 #daa67e #ce0000 #daa67e
+client.background       orange          #a16e1b
+client.focused          orange  #eebb67 #e79e27 #000000 #2770e7
+client.focused_inactive orange  #eebb67 #b87e1f #191919 #1f59b8
+client.unfocused        orange  #eebb67 #a16e1b #323232 #1b4ea1
+client.urgent           orange  #bd2727 #e79e27 #333333 #27bdbd
 
-client.background	yellow		#121212
-client.focused		yellow	#999b00 #999b00 #ffffff #cacb7c
-client.focused_inactive	yellow	#999b00 #666700 #ffffff #cacb7c
-client.unfocused	yellow	#999b00 #666700 #999999 #cacb7c
-client.urgent		yellow	#999b00 #cacb7c #ce0000 #cacb7c
+client.background       yellow          #a1a023
+client.focused          yellow  #eeec6f #e7e532 #000000 #3234e7
+client.focused_inactive yellow  #eeec6f #b8b728 #191919 #2829b8
+client.unfocused        yellow  #eeec6f #a1a023 #323232 #2324a1
+client.urgent           yellow  #bd2727 #e79e27 #333333 #27bdbd
 
-client.background	green		#121212
-client.focused		green	#04af5b #04af5b #ffffff #7dd5aa
-client.focused_inactive	green	#04af5b #02713b #ffffff #7dd5aa
-client.unfocused	green	#04af5b #02713b #999999 #7dd5aa
-client.urgent		green	#04af5b #7dd5aa #ce0000 #7dd5aa
+client.background       green           #3e972c
+client.focused          green   #8be379 #5ad840 #000000 #be40d8
+client.focused_inactive green   #8be379 #48ac33 #191919 #9833ac
+client.unfocused        green   #8be379 #3e972c #323232 #852c97
+client.urgent           green   #bd2727 #e79e27 #333333 #27bdbd
 
-client.background	gray		#121212
-client.focused		gray 	#8c959f #8c959f #ffffff #c3c8cd
-client.focused_inactive	gray	#8c959f #676d75 #ffffff #c3c8cd
-client.unfocused	gray	#8c959f #676d75 #999999 #c3c8cd
-client.urgent		gray	#8c959f #c3c8cd #ce0000 #c3c8cd
+client.background       gray            #636368
+client.focused          gray    #afafb4 #8e8e95 #ffffff #95958e
+client.focused_inactive gray    #afafb4 #717177 #e5e5e5 #777771
+client.unfocused        gray    #afafb4 #636368 #cccccc #686863
+client.urgent           gray    #bd2727 #e79e27 #333333 #27bdbd
 
-client.background	blue		#121212
-client.focused		blue 	#3384d6 #3384d6 #ffffff #95bee8
-client.focused_inactive	blue	#3384d6 #1f5082 #ffffff #95bee8
-client.unfocused	blue	#3384d6 #1f5082 #999999 #95bee8
-client.urgent		blue	#3384d6 #95bee8 #ce0000 #95bee8
+client.background       blue            #275197
+client.focused          blue    #739de3 #3874d8 #ffffff #d89c38
+client.focused_inactive blue    #739de3 #2c5cac #e5e5e5 #ac7c2c
+client.unfocused        blue    #739de3 #275197 #cccccc #976d27
+client.urgent           blue    #bd2727 #e79e27 #333333 #27bdbd
 
-client.background	purple		#121212
-client.focused		purple	#8f5cbe #8f5cbe #ffffff #c6abdd
-client.focused_inactive	purple	#8f5cbe #5c3e78 #ffffff #c6abdd
-client.unfocused	purple	#8f5cbe #5c3e78 #999999 #c6abdd
-client.urgent		purple	#8f5cbe #c6abdd #ce0000 #c6abdd
+client.background       purple          #6f276f
+client.focused          purple  #bb73bb #9f389f #ffffff #389f38
+client.focused_inactive purple  #bb73bb #7f2c7f #e5e5e5 #2c7f2c
+client.unfocused        purple  #bb73bb #6f276f #cccccc #276f27
+client.urgent           purple  #bd2727 #e79e27 #333333 #27bdbd
 
-client.background	black		#121212
-client.focused		black	#595959 #595959 #ffffff #a3a3a3
-client.focused_inactive	black	#595959 #3a3a3a #ffffff #a3a3a3
-client.unfocused	black	#595959 #3a3a3a #999999 #a3a3a3
-client.urgent		black	#595959 #a3a3a3 #ce0000 #a3a3a3
+client.background       black           #141414
+client.focused          black   #5b5b5b #333333 #ffffff #cccccc
+client.focused_inactive black   #5b5b5b #1e1e1e #e5e5e5 #e1e1e1
+client.unfocused        black   #5b5b5b #141414 #cccccc #ebebeb
+client.urgent           black   #bd2727 #e79e27 #333333 #27bdbd
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -86,7 +86,7 @@ bindcode $mod+36 exec qubes-i3-sensible-terminal
 bindcode $mod+Shift+24 kill
 
 # start dmenu (a program launcher)
-bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -nb #d2d2d2 -nf #000000 -sb #63a0ff"
+bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -nb #d2d2d2 -nf #333333 -sb #63a0ff -sf #f5f5f5"
 
 # change focus
 bindcode $mod+44 focus left
@@ -201,13 +201,13 @@ bar {
         status_command qubes-i3status
         colors {
             background #d2d2d2
-            statusline #00000
+            statusline #333333
 
             #class               #border #backgr #text
-            focused_workspace    #4c7899 #63a0ff #000000
-            active_workspace     #333333 #5f676a #ffffff
-            inactive_workspace   #222222 #333333 #888888
-            urgent_workspace     #BD2727 #E79E27 #000000
+            focused_workspace    #3874d8 #63a0ff #333333
+            active_workspace     #333333 #888888 #f5f5f5
+            inactive_workspace   #888888 #333333 #888888
+            urgent_workspace     #bd2727 #e79e27 #333333
         }
 }
 
