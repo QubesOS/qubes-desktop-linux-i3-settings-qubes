@@ -1,5 +1,5 @@
 Name:       i3-settings-qubes
-Version:    1.5
+Version:    1.6
 Release:    1%{?dist}
 Summary:    Default i3 settings for Qubes
 
@@ -68,3 +68,8 @@ fi
 %{_bindir}/qubes-i3status
 
 %changelog
+
+* Mon Sep 14 2019 anadahz <andz@torproject.org> - 1.6-1
+- Sync i3 configuration files to match the latest i3 release v4.17.1
+- Apply @SietsevanderMolen batteries patch to qubes-i3status
+  (https://github.com/QubesOS/qubes-desktop-linux-i3/pull/6)
