@@ -1,6 +1,6 @@
 Name:       i3-settings-qubes
 Version:    1.6
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Default i3 settings for Qubes
 
 Group:      User Interface/Desktops
@@ -68,6 +68,10 @@ fi
 %{_bindir}/qubes-i3status
 
 %changelog
+
+* Mon Sep 26 2019 anadahz <andz@torproject.org> - 1.6-2
+- Add volume status to qubes-13status
+- Use pactl in i3 config to fix volume over amplification
 
 * Mon Sep 14 2019 anadahz <andz@torproject.org> - 1.6-1
 - Sync i3 configuration files to match the latest i3 release v4.17.1

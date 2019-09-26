@@ -126,6 +126,16 @@ status_disk() {
     json disk "Disk free: $disk"
 }
 
+status_volume() {
+    local volume=$(awk '/%/ {gsub(/[\[\]]/,""); print $4}' <(amixer sget Master))
+    local playback=$(awk '/%/ {gsub(/[\[\]]/,""); print $6}' <(amixer sget Master))
+    if [[ $playback == off ]]; then
+        json volume "Volume: mute"
+    else
+        json volume "Volume: $volume"
+    fi
+}
+
 main() {
     echo '{"version":1}'
     echo '['
@@ -140,11 +150,13 @@ main() {
             local disk=$(status_disk)
             local bat=$(status_bat)
             local load=$(status_load)
+            local volume=$(status_volume)
         fi
         local time=$(status_time)
-        echo ",[$qubes$disk$bat$load$time]"
+        echo ",[$qubes$disk$bat$load$volume$time]"
         sleep 1
     done
 }
+
 
 main
