@@ -7,11 +7,6 @@ Group:      User Interface/Desktops
 License:    GPLv2+
 URL:        http://www.qubes-os.org/
 Source0:    %{name}-%{version}.tar.gz
-Source1:    i3.config
-Source2:    i3.config.keycodes
-Source3:    qubes-i3-sensible-terminal
-Source4:    qubes-i3-xdg-autostart
-Source5:    qubes-i3status
 
 Requires:   i3
 Requires:   xautolock
@@ -29,11 +24,7 @@ Requires:   perl-open
 %setup
 
 %install
-install -m 644 -D %{SOURCE1} %{buildroot}%{_sysconfdir}/i3/config.qubes
-install -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/i3/config.keycodes.qubes
-install -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/qubes-i3-sensible-terminal
-install -m 755 -D %{SOURCE4} %{buildroot}%{_bindir}/qubes-i3-xdg-autostart
-install -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/qubes-i3status
+%make_install
 
 %define settings_replace() \
 origfile="`echo %{1} | sed 's/\.qubes$//'`"\
