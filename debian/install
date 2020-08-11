@@ -1,0 +1,5 @@
+etc/i3/config.qubes
+etc/i3/config.keycodes.qubes
+usr/bin/qubes-i3-sensible-terminal
+usr/bin/qubes-i3-xdg-autostart
+usr/bin/qubes-i3status

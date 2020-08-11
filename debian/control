@@ -1,0 +1,18 @@
+Source: i3-settings-qubes
+Section: xfce
+Priority: extra
+Maintainer: Frédéric Pierret (fepitre) <frederic.pierret@qubes-os.org>
+Build-Depends:
+  debhelper (>= 10~),
+  config-package-dev
+Standards-Version: 4.3.0
+Homepage: http://www.qubes-os.org
+
+Package: i3-settings-qubes
+Section: i3
+Architecture: amd64
+Depends: i3, ${shlibs:Depends}, ${misc:Depends}
+Provides: ${diverted-files}
+Conflicts: ${diverted-files}
+Description: Default i3 settings for Qubes.
+  Default i3 settings for Qubes.
