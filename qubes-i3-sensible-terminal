@@ -21,7 +21,7 @@ get_vm() {
 main() {
     local vm=$(get_vm)
     if [[ -n "$vm" ]]; then
-        qvm-run "$vm" "bash -c '$run_terminal'"
+        qrexec-client -e -d "$vm" DEFAULT:"bash -c '$run_terminal'"
     else # run terminal in dom0
         exec bash -c "$run_terminal"
     fi
