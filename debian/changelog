@@ -1,3 +1,16 @@
+i3-settings-qubes (1.8-1) unstable; urgency=medium
+
+  [ Frédéric Pierret (fepitre) ]
+  * debian: initial packaging from upstream
+
+  [ Lukas Czerner ]
+  * qubes-i3-sensible-terminal: use qrexec-client directly
+
+  [ Marek Marczykowski-Górecki ]
+  * Fallback to qvm-run outside of dom0
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Sun, 20 Sep 2020 02:34:19 +0200
+
 i3-settings-qubes (1.7-1) unstable; urgency=medium
 
   Initial commit
