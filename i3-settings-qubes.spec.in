@@ -8,6 +8,8 @@ License:    GPLv2+
 URL:        http://www.qubes-os.org/
 Source0:    %{name}-%{version}.tar.gz
 
+BuildRequires: make
+
 Requires:   i3
 Requires:   xautolock
 Requires:   i3lock
