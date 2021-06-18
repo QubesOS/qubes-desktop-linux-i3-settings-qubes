@@ -1,3 +1,11 @@
+i3-settings-qubes (1.8-2) unstable; urgency=medium
+
+  [ Frédéric Pierret (fepitre) ]
+  * Add .gitlab-ci.yml
+  * spec: add BR make
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Fri, 18 Jun 2021 03:44:55 +0200
+
 i3-settings-qubes (1.8-1) unstable; urgency=medium
 
   [ Frédéric Pierret (fepitre) ]
