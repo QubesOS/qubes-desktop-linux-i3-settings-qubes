@@ -1,0 +1,11 @@
+host:
+  rpm:
+    spec:
+    - i3-settings-qubes.spec
+vm:
+  rpm:
+    spec:
+    - i3-settings-qubes.spec
+  deb:
+    build:
+    - debian
