@@ -1,10 +1,10 @@
 host:
   rpm:
-    spec:
+    build:
     - i3-settings-qubes.spec
 vm:
   rpm:
-    spec:
+    build:
     - i3-settings-qubes.spec
   deb:
     build:
