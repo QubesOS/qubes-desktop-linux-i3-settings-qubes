@@ -130,10 +130,8 @@ status_disk() {
 
 status_volume() {
     local volcmd=''
-    if amixer sget Master 2>/dev/null; then
-        volcmd=$(amixer sget Master)
-    else
-        volcmd=$(amixer -c 1 sget Master)
+    if ! volcmd=$(amixer sget Master 2>/dev/null); then
+	  volcmd=$(amixer -c 1 sget Master)
     fi
     local volume=$(echo "$volcmd" | awk '/%/ {gsub(/[\[\]]/,""); print $4}')
     local playback=$(echo "$volcmd" | awk '/%/ {gsub(/[\[\]]/,""); print $6}')
