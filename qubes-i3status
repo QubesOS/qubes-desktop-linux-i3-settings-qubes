@@ -107,9 +107,9 @@ status_disk() {
     local free=''
     local size=''
     local usage=''
-    local qvmpool=$(qubes-prefs default-pool)
-    size=$(qvm-pool -i $qvmpool | grep 'size' | awk '{print $2}')
-    usage=$(qvm-pool -i $qvmpool | grep 'usage' | awk '{print $2}')
+    local pool=$(qvm-pool -i $(qubes-prefs default-pool))
+    size=$(echo "$pool" | grep 'size' | awk '{print $2}')
+    usage=$(echo "$pool" | grep 'usage' | awk '{print $2}')
     free=$(($size - $usage))
     case ${#free} in
         1[3-5])
