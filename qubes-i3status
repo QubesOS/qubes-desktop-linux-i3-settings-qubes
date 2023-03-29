@@ -45,11 +45,14 @@ status_time() {
 }
 
 status_bat() {
-    local accum_now_mWh=0 # current battery power in mWh
-    local accum_full_mWh=0 # full battery power in mWh
-
     local batteries # batteries connected to the system
     mapfile -t batteries < <(shopt -s nullglob; for f in /sys/class/power_supply/BAT*; do echo "$f"; done)
+    if [ -z "${batteries}" ]; then
+        return
+    fi
+
+    local accum_now_mWh=0 # current battery power in mWh
+    local accum_full_mWh=0 # full battery power in mWh
     for battery in "${batteries[@]}"; do
         if [ -f "${battery}"/energy_now ]; then
             accum_now_mWh=$((accum_now_mWh + $(cat "${battery}"/energy_now)))
@@ -64,7 +67,6 @@ status_bat() {
             accum_full_mWh=$((accum_full_mWh + full_mWh))
         fi
     done
-
     local bat_pct=$((100*accum_now_mWh/accum_full_mWh))
 
     local ac_present=false
@@ -110,7 +112,7 @@ status_disk() {
     local pool=$(qvm-pool -i $(qubes-prefs default-pool))
     size=$(echo "$pool" | grep 'size' | awk '{print $2}')
     usage=$(echo "$pool" | grep 'usage' | awk '{print $2}')
-    free=$(($size - $usage))
+    free=$((size - usage))
     case ${#free} in
         1[3-5])
             disk="$(($free / 1099511627776))T" ;;
