@@ -1,3 +1,11 @@
+i3-settings-qubes (1.10-1) unstable; urgency=medium
+
+  [ immeëmosol ]
+  * Prevent errors from qubes-i3status
+  * Update i3.config to prevent errors for dmenu
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Mon, 10 Apr 2023 03:12:50 +0200
+
 i3-settings-qubes (1.9-3) unstable; urgency=medium
 
   [ anadahz ]
