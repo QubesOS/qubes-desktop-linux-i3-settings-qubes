@@ -1,3 +1,13 @@
+i3-settings-qubes (1.11-1) unstable; urgency=medium
+
+  [ Frédéric Pierret (fepitre) ]
+  * Rework qubes-i3status in python and improve snd and net status
+
+  [ Marek Marczykowski-Górecki ]
+  * rpm: mark packages as noarch
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Sun, 11 Aug 2024 23:45:45 +0200
+
 i3-settings-qubes (1.10-1) unstable; urgency=medium
 
   [ immeëmosol ]
