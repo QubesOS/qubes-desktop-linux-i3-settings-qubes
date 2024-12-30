@@ -24,7 +24,7 @@ main() {
         if command -v qrexec-client >/dev/null; then
             qrexec-client -e -d "$vm" DEFAULT:"bash -c '$run_terminal'"
         else
-            qvm-run "$vm" qvm-run "$vm" "bash -c '$run_terminal'"
+            qvm-run "$vm" "bash -c '$run_terminal'"
         fi
     else # run terminal in dom0
         exec bash -c "$run_terminal"
