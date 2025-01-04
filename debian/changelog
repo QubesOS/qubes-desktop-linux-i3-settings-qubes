@@ -1,3 +1,10 @@
+i3-settings-qubes (1.12-1) unstable; urgency=medium
+
+  [ Zaz Brown ]
+  * fix: remove duplicate `qvm-run "$vm"`
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Sat, 04 Jan 2025 04:05:27 +0100
+
 i3-settings-qubes (1.11-1) unstable; urgency=medium
 
   [ Frédéric Pierret (fepitre) ]
