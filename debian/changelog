@@ -1,3 +1,10 @@
+i3-settings-qubes (1.13-1) unstable; urgency=medium
+
+  * Include notification daemon
+  * CI: drop R4.1, add R4.3
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Sat, 28 Jun 2025 02:04:59 +0200
+
 i3-settings-qubes (1.12-1) unstable; urgency=medium
 
   [ Zaz Brown ]
