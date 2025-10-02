@@ -10,9 +10,38 @@
 
 set $mod Mod1
 
+include config.d/*.conf
+
+## VARS BEGIN ##
+set $font pango:monospace 8
+
+set $lock i3lock --nofork -c 141414
+
+# Optional: Use amixer as pactl over amplifies volume above 100%.
+#set $audio_raise amixer -q sset Master 10%+ unmute
+#set $audio_lower amixer -q sset Master 10%- unmute
+set $audio_raise pactl set-sink-volume @DEFAULT_SINK@ +10%
+set $audio_lower pactl set-sink-volume @DEFAULT_SINK@ -10%
+set $audio_mute pactl set-sink-mute @DEFAULT_SINK@ toggle
+set $audio_mic_mute pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+set $terminal qubes-i3-sensible-terminal
+set $console qubes-i3-sensible-terminal console
+
+# start dmenu (a program launcher)
+# j4-dmenu-desktop is not upstreamed but it is much faster.
+set $dmenu_common_args --dmenu="dmenu -l 25 -i -nb \#d2d2d2 -nf \#333333 -sb \#63a0ff -sf \#f5f5f5"
+#set $dmenu i3-dmenu-desktop
+set $dmenu j4-dmenu-desktop
+set $dmenu_extra_args --no-generic --term=qubes-i3-sensible-terminal
+
+#set $desktop_autostart dex-autostart --autostart --environment=i3 --term=qubes-i3-sensible-terminal
+set $desktop_autostart qubes-i3-xdg-autostart
+## VARS END ##
+
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:monospace 8
+font $font
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
@@ -23,16 +52,14 @@ font pango:monospace 8
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock --transfer-sleep-lock -- $lock
+bindcode $mod+Shift+32 exec $lock
 
-# Use pactl to adjust volume in PulseAudio.
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10%
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
-# Optional: Use amixer as pactl over amplifies volume above 100%.
-#bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q sset Master 10%+ unmute
-#bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q sset Master 10%- unmute
+# Adjust volume.
+bindsym XF86AudioRaiseVolume exec --no-startup-id $audio_raise
+bindsym XF86AudioLowerVolume exec --no-startup-id $audio_lower
+bindsym XF86AudioMute exec --no-startup-id $audio_mute
+bindsym XF86AudioMicMute exec --no-startup-id $audio_mic_mute
 
 client.background       dom0            #c4c4c4
 client.focused          dom0    #f7f7f7 #f5f5f5 #000000 #0a0a0a
@@ -88,17 +115,25 @@ client.focused_inactive black   #5b5b5b #1e1e1e #e5e5e5 #e1e1e1
 client.unfocused        black   #5b5b5b #141414 #cccccc #ebebeb
 client.urgent           black   #bd2727 #e79e27 #333333 #27bdbd
 
-# Use Mouse+$mod to drag floating windows to their wanted position
+# use these keys for focus, movement, and resize directions when reaching for
+# the arrows is not convenient
+set $up l
+set $down k
+set $left j
+set $right semicolon
+
+# use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal in the domain of the currently active window
-bindcode $mod+36 exec qubes-i3-sensible-terminal
+bindcode $mod+36 exec $terminal
+bindcode $mod+Shift+36 exec $console
 
 # kill focused window
 bindcode $mod+Shift+24 kill
 
 # start dmenu (a program launcher)
-bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -nb #d2d2d2 -nf #333333 -sb #63a0ff -sf #f5f5f5"
+bindcode $mod+40 exec --no-startup-id LANG=C $dmenu $dmenu_common_args $dmenu_extra_args
 
 # change focus
 bindcode $mod+44 focus left
@@ -150,6 +185,13 @@ bindcode $mod+38 focus parent
 # focus the child container
 #bindsym $mod+d focus child
 
+# move the currently focused window to the scratchpad
+bindsym $mod+Shift+minus move scratchpad
+
+# Show the next scratchpad window or hide the focused scratchpad window.
+# If there are multiple scratchpad windows, this command cycles through them.
+bindsym $mod+minus scratchpad show
+
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
 set $ws1 "1"
@@ -164,6 +206,9 @@ set $ws9 "9"
 set $ws10 "10"
 
 # switch to workspace
+workspace_auto_back_and_forth yes
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
 bindcode $mod+10 workspace number $ws1
 bindcode $mod+11 workspace number $ws2
 bindcode $mod+12 workspace number $ws3
@@ -237,6 +282,12 @@ bar {
         }
 }
 
+# Avoids screen size fingerprinting
+for_window [title="Tor Browser"] floating enable
+for_window [instance="zenity"] floating enable
+
 # Make sure all xdg autostart entries are started, this is (among other things)
 # necessary to make sure transient vm's come up
-exec --no-startup-id qubes-i3-xdg-autostart
+exec --no-startup-id $desktop_autostart
+
+# vim: ft=i3config
