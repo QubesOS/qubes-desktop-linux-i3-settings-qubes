@@ -1,34 +1,35 @@
-#!/bin/bash
-
-run_terminal='
-for t in "$TERMINAL" x-terminal-emulator urxvt rxvt termit terminator Eterm aterm gnome-terminal konsole roxterm xfce4-terminal termite lxterminal mate-terminal terminology st xterm; do
-    command -v "$t" > /dev/null 2>&1 && exec "$t";
-done
-'
-
-get_id() {
-    local id=$(xprop -root _NET_ACTIVE_WINDOW)
-    echo ${id##* } # extract id
-}
-
-get_vm() {
-    local id=$(get_id)
-    local vm=$(xprop -id $id | grep '_QUBES_VMNAME(STRING)')
-    local vm=${vm#*\"} # extract vmname
-    echo ${vm%\"*} # extract vmname
-}
+#!/bin/sh
+set -eu
 
 main() {
-    local vm=$(get_vm)
-    if [[ -n "$vm" ]]; then
-        if command -v qrexec-client >/dev/null; then
-            qrexec-client -e -d "$vm" DEFAULT:"bash -c '$run_terminal'"
-        else
-            qvm-run "$vm" "bash -c '$run_terminal'"
-        fi
-    else # run terminal in dom0
-        exec bash -c "$run_terminal"
-    fi
+  cmd=""
+  case "${1-}" in
+    console) cmd="$1";;
+    "");;
+    *) printf '%s\n' "Invalid argument" >&2; exit 1;;
+  esac
+
+  guivm_terminal=i3-sensible-terminal
+  domU_terminal=qubes-run-terminal
+  domU_console=qvm-console-dispvm
+  id="$(xprop -root _NET_ACTIVE_WINDOW)"
+  id="${id##* }"
+  vm="$(xprop -id "$id" | grep '_QUBES_VMNAME(STRING)')" || true
+  if test -z "$vm"; then
+    exec "$guivm_terminal"
+  fi
+  vm="${vm#*\"}"
+  vm="${vm%\"*}"
+
+  if test "$cmd" = "console"; then
+    exec "$domU_console" -- "$vm"
+  fi
+
+  if command -v qrexec-client >/dev/null; then
+    exec qrexec-client -e -d "$vm" -- \
+      "DEFAULT:QUBESRPC qubes.StartApp+$domU_terminal $vm"
+  fi
+  exec qvm-run --no-gui --service -- "$vm" qubes.StartApp+"$domU_terminal"
 }
 
-main
+main "$@"
