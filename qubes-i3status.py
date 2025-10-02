@@ -6,6 +6,7 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 from qubesadmin import Qubes
+from qubesadmin import exc as qadmin_exc
 
 app = Qubes()
 
@@ -191,6 +192,7 @@ def main():
     print("[]", flush=True)
 
     n = 0
+    qubesd_status = None
     qubes_status = None
     disk_status = None
     bat_status = None
@@ -199,18 +201,22 @@ def main():
     net_status = None
     while True:
         if n % 2 == 0:
-            qubes_status = status_qubes()
-            disk_status = status_disk()
+            try:
+                qubes_status = status_qubes()
+                disk_status = status_disk()
+                # network status disabled by default as it's dangerous to run a
+                # command on an untrusted qube from dom0/adminvm
+                # net_status = status_net()
+            except qadmin_exc.QubesDaemonCommunicationError:
+                qubesd_status = json_output("qubesd", "qubesd connection failed")
             bat_status = status_bat()
             load_status = status_load()
             volume_status = status_volume()
-            # network status disabled by default as it's dangerous to run a
-            # command on an untrusted qube from dom0/adminvm
-            # net_status = status_net()
 
         time_status = status_time()
 
         status_list = [
+            qubesd_status,
             qubes_status,
             disk_status,
             bat_status,
