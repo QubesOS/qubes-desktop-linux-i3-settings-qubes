@@ -1,29 +1,80 @@
 #!/bin/bash
+set -eu
+
+log() {
+    [ "${DEBUG:-}" ] || return 0
+    printf '%s\n' "$1" >&2
+}
+
+in_array() {
+    local var
+    var="$1"
+    shift
+    for elem in "$@"; do
+        if [ "$elem" = "$var" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
 
 xdg_autostart() {
-    local config=$1
-    shopt -s nullglob
-    if [[ -d "$config/autostart" ]]; then
-        local i
-        for i in $config/autostart/*.desktop; do
-            grep -q -E "^Hidden=true" "$i" && continue
-            if grep -q -E "^OnlyShowIn=" "$i"; then
-                # need to test twice, as lack of the line entirely means we still run it
-                grep -E "^OnlyShowIn=" "$i" | grep -q 'I3;' || continue
-            fi
-            grep -E "^NotShowIn=" "$i" | grep -q 'I3;' && continue
-
-            local trycmd=$(grep -E "^TryExec=" "$i" | cut -d'=' -f2)
-            if [[ -n "$trycmd" ]]; then
-                which "$trycmd" >/dev/null 2>&1 || continue
-            fi
-
-            local cmd=$(grep -E "^Exec=" "$i" | cut -d'=' -f2)
-            if [[ -n "$cmd" ]]; then
-                $cmd &
-            fi
-        done
+    local config file lang short_lang
+    config="$1"
+    if [ ! -d "$config/autostart" ]; then
+        return 0
     fi
+    lang="${LANG%.*}"
+    short_lang="${lang%_*}"
+
+    local -a wanted_keys
+    wanted_keys=(Hidden OnlyShowIn NotShowIn TryExec Exec)
+    wanted_keys+=(Name Name["$lang"] Name["$short_lang"])
+    shopt -s nullglob
+    for file in "$config/autostart"/*.desktop; do
+        [ -e "$file" ] || continue
+        [ -r "$file" ] || continue
+        log "Attempting: $file"
+        unset arr
+        local -A arr
+        local key value desktop_entry
+        desktop_entry=""
+        while read -r line; do
+            if [ -z "$desktop_entry" ]; then
+                [ "$line" == "[Desktop Entry]" ] || continue
+                desktop_entry="1"
+                continue
+            fi
+            [[ ${line:0:1} == [A-Z] ]] || continue
+            key="${line%%=*}"
+            in_array "$key" "${wanted_keys[@]}" || continue
+            value="${line#*=}"
+            arr["$key"]="$value"
+        done < "$file"
+        [ "${#arr[@]}" -gt 0 ] || continue
+
+        local empty_key
+        for empty_key in "${wanted_keys[@]}"; do
+            : "${arr["$empty_key"]:=}"
+        done
+
+        local name
+        name="${arr["Name[$lang]"]:-"${arr["Name[$short_lang]"]:-"${arr["Name"]:-}"}"}"
+
+        [ "${arr["Hidden"]}" = "true" ] && continue
+        if [ -n "${arr["OnlyShowIn"]}" ]; then
+            [[ "${arr["OnlyShowIn"]}" == *"I3;"* ]] || continue
+        fi
+        [[ "${arr["NotShowIn"]}" == *"I3;"* ]] && continue
+
+        if [ -n "${arr["TryExec"]}" ]; then
+            command -v "${arr["TryExec"]}" >/dev/null || continue
+        fi
+        if [ -n "${arr["Exec"]}" ]; then
+            [ -z "$name" ] || log "Executing: $name"
+            eval "${arr["Exec"]}" &
+        fi
+    done
 }
 
 xdg_autostart "${XDG_CONFIG_DIRS-/etc/xdg}"
