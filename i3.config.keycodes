@@ -293,4 +293,7 @@ for_window [instance="zenity"] floating enable
 # necessary to make sure transient vm's come up
 exec --no-startup-id $desktop_autostart
 
+# Start dunst explicitly, bus activation can't work if there are multiple providers
+exec --no-startup-id dunst
+
 # vim: ft=i3config
