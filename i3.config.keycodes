@@ -135,6 +135,9 @@ bindcode $mod+Shift+24 kill
 # start dmenu (a program launcher)
 bindcode $mod+40 exec --no-startup-id LANG=C $dmenu $dmenu_common_args $dmenu_extra_args
 
+# add a key for standard qubes menu too
+bindcode $mod+Shift+40 exec --no-startup-id qubes-app-menu
+
 # change focus
 bindcode $mod+44 focus left
 bindcode $mod+45 focus down
