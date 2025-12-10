@@ -1,3 +1,17 @@
+i3-settings-qubes (1.14-1) unstable; urgency=medium
+
+  [ Ben Grande ]
+  * Do not break status if qubesd has stopped
+  * Make sensible terminal cleaner and faster
+  * Improve i3 config and dmenu speed
+  * Improve XDG autostart using arrays and eval
+
+  [ Marek Marczykowski-Górecki ]
+  * Add mod+shift+d for starting qubes menu
+  * Fix starting notification daemon
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Wed, 10 Dec 2025 05:37:55 +0100
+
 i3-settings-qubes (1.13-1) unstable; urgency=medium
 
   * Include notification daemon
