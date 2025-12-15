@@ -1,3 +1,9 @@
+i3-settings-qubes (1.15-1) unstable; urgency=medium
+
+  * Do not deviate from upstream for floating toggle
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Mon, 15 Dec 2025 18:22:32 +0100
+
 i3-settings-qubes (1.14-1) unstable; urgency=medium
 
   [ Ben Grande ]
