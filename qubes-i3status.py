@@ -151,6 +151,44 @@ def status_disk():
         disk_free = f"{free} Bytes"
     return json_output("disk", f"Disk free: {disk_free}")
 
+#-----------    For a 2nd_Storage   ----------#
+#
+# To add free space of the secondary storage; uncommented the lines below (remove "#" for each lines of the section). 
+# Change "2nd_Storage with the name of the second pool. You could find it with "sudo lvs" or with "Qubes Disk Space Monitor" in the systray.
+# Uncommented "disk2_status = None","disk2_status = status_disk2()" and "disk2_status," in def main() section.
+#---------------------------------------------#
+
+######################################################################
+#def status_disk2():
+#    output = subprocess.check_output("qvm-pool -i 2nd_Storage", shell=True).decode()
+#    lines =output.splitlines()
+#    size = 0 
+#    usage = 0 
+#    for line in lines:
+#        if 'size' in line or 'usage' in line:
+#            parts = line.split()
+#            if 'size' in line:
+#                size = int(parts[1])
+#            if 'usage' in line:
+#                usage = int(parts[1])
+#    free = size - usage
+
+#    if free >= 1 << 40: 
+#        disk2_free = f"{free >> 40}T"
+#    elif free >= 1 << 30: 
+#        disk2_free = f"{free >> 30}G"
+#    elif free >= 1 << 20: 
+#        disk2_free = f"{free >> 20}M"
+#    elif free >= 1 << 10: 
+#        disk2_free = f"{free >> 10}K"
+#    else:
+#        disk2_free = f"{free} Bytes"
+
+#    return json_output("disk", f"  Disk2 free: {disk2_free}  ")
+
+#######################################################################
+
+# If you use audio with sys-audio, comment this section and uncomment the section "Volume for sys-audio" #
 
 def status_volume():
     try:
@@ -182,6 +220,40 @@ def status_volume():
             if state == "on":
                 return json_output("volume", f"Volume: {volume}")
 
+#---------- Volume for sys-audio ---------------#
+
+#def status_volume():
+
+#    try:
+#        cmd = (
+#            "qvm-run --pass-io sys-audio "
+#            "\"wpctl get-volume @DEFAULT_AUDIO_SINK@\""
+#        )
+#        raw_output = subprocess.check_output(cmd, shell=True, text=True).strip()
+#    except subprocess.CalledProcessError as e:
+#        return json_output(
+#            "volume",
+#            f"  Erreur qvm-run (code {e.returncode})",
+#        )
+#    except Exception as exc:
+#        return json_output("volume", f"  Exception inattendue : {exc}")
+
+#    match = re.search(r"([0-9]*\.?[0-9]+)", raw_output)
+#    if not match:
+#        return json_output(
+#             "volume",
+#            "Unable to extract volume from output")
+
+#    value = float(match.group(1))
+
+#    if value > 1:                     
+#        volume_pct = round(value)
+#    else:                             
+#        volume_pct = round(value * 100)
+
+#    return json_output("volume", f"Volume audio : {volume_pct} %")
+
+#--------------------------------------------------------------#
 
 def main():
     # Send the header so that i3 bar knows we want to use JSON.
@@ -195,6 +267,7 @@ def main():
     qubesd_status = None
     qubes_status = None
     disk_status = None
+    #disk2_status = status_disk2()
     bat_status = None
     load_status = None
     volume_status = None
@@ -219,6 +292,7 @@ def main():
             qubesd_status,
             qubes_status,
             disk_status,
+            #disk2_status,
             bat_status,
             load_status,
             volume_status,
