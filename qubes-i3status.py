@@ -151,8 +151,85 @@ def status_disk():
         disk_free = f"{free} Bytes"
     return json_output("disk", f"Disk free: {disk_free}")
 
+def status_disk2():
+    default_pool_name = app.property_get_default("default_pool_private")
+    pools = app.pools
+
+    results = []
+
+    for pool_name, pool in pools.items():
+        # Ignore default pool
+        if pool_name == default_pool_name:
+            continue
+
+        # Filter only pools with a driver of 'lvm_thin'
+        if getattr(pool, "driver", None) != "lvm_thin":
+            continue
+
+        size = int(pool.size)
+        usage = int(pool.usage)
+        free = size - usage
+ 
+           # Détermination of free size
+        if free >= 1 << 40: 
+                disk2_free = f"{free >> 40}T"
+        elif free >= 1 << 30:  
+                disk2_free = f"{free >> 30}G"
+        elif free >= 1 << 20:  
+                disk2_free = f"{free >> 20}M"
+        elif free >= 1 << 10:
+                disk2_free = f"{free >> 10}K"
+        else:
+                disk2_free = f"{free} Bytes"
+
+        return json_output("disk", f"  Disk2 free: {disk2_free}  ")
+
+def get_current_volume():
+    try:
+        subprocess.check_output(
+            ["qvm-check", "sys-audio"],
+            stderr=subprocess.STDOUT,
+        )
+        try:
+
+            return status_volume()
+        except subprocess.CalledProcessError:
+            return status_volume_dom0()
+    except subprocess.CalledProcessError:
+        return status_volume_dom0()
 
 def status_volume():
+    # Recover the current volume of sink audio for VM sys-audio.
+
+    cmd = (
+        "qvm-run --pass-io sys-audio "
+        "\"wpctl get-volume @DEFAULT_AUDIO_SINK@\""
+    )
+    raw_output = subprocess.check_output(cmd, shell=True, text=True).strip()
+        # La VM audio n’est pas joignable ou la commande a échoué
+
+
+    # Extracting the number returned by wpctl
+
+    match = re.search(r"([0-9]*\.?[0-9]+)", raw_output)
+    if not match:
+        return json_output(
+            "volume",
+            "Impossible d'extraire le volume de la sortie")
+
+    value = float(match.group(1))
+
+    # Converting in percentage
+
+    if value > 1:                     # déjà exprimé en %
+        volume_pct = round(value)
+    else:                             # conversion 0‑1 → %
+        volume_pct = round(value * 100)
+
+    return json_output("volume", f"Volume audio : {volume_pct} %")
+
+
+def status_volume_dom0():
     try:
         volcmd = subprocess.run(
             ["amixer", "sget", "Master"],
@@ -195,6 +272,7 @@ def main():
     qubesd_status = None
     qubes_status = None
     disk_status = None
+    disk2_status = None
     bat_status = None
     load_status = None
     volume_status = None
@@ -204,21 +282,24 @@ def main():
             try:
                 qubes_status = status_qubes()
                 disk_status = status_disk()
-                # network status disabled by default as it's dangerous to run a
-                # command on an untrusted qube from dom0/adminvm
-                # net_status = status_net()
-            except qadmin_exc.QubesDaemonCommunicationError:
+                disk2_status = status_disk2()
+
+            except qadmin_exc.QubesDaemonCommunitionError:
                 qubesd_status = json_output("qubesd", "qubesd connection failed")
             bat_status = status_bat()
             load_status = status_load()
-            volume_status = status_volume()
+            volume_status = get_current_volume()
 
         time_status = status_time()
+                # network status disabled by default as it's dangerous to run a
+                # command on an untrusted qube from dom0/adminvm
+            # net_status = status_net()
 
         status_list = [
             qubesd_status,
             qubes_status,
             disk_status,
+            disk2_status,
             bat_status,
             load_status,
             volume_status,
