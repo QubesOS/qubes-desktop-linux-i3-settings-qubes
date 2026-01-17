@@ -3,6 +3,7 @@ import re
 import time
 import json
 import subprocess
+import shlex
 from pathlib import Path
 from datetime import datetime
 from qubesadmin import Qubes
@@ -16,6 +17,7 @@ def json_output(name, full_text, color=None):
     if color:
         entry["color"] = color
     return entry
+
 
 
 def status_net():
@@ -149,10 +151,100 @@ def status_disk():
         disk_free = f"{free >> 10}K"
     else:
         disk_free = f"{free} Bytes"
-    return json_output("disk", f"Disk free: {disk_free}")
+    return json_output("disk", f"{default_pool}: {disk_free} free")
 
+
+def status_disk2():
+    default_pool_name = app.property_get_default("default_pool_private")
+    pools = app.pools
+
+    parts = []
+
+    for pool_name, pool in pools.items():
+        # Ignore default pool
+        if pool_name == default_pool_name:
+            continue
+
+        # Filter only pools with a driver of 'lvm_thin'
+        if getattr(pool, "driver", None) != "lvm_thin":
+            continue
+
+        size = int(pool.size)
+        usage = int(pool.usage)
+        free = size - usage
+
+        # Détermination of free size
+        if free >= 1 << 40:
+            disk2_free = f"{free >> 40}T"
+        elif free >= 1 << 30:
+            disk2_free = f"{free >> 30}G"
+        elif free >= 1 << 20:
+            disk2_free = f"{free >> 20}M"
+        elif free >= 1 << 10:
+            disk2_free = f"{free >> 10}K"
+        else:
+            disk2_free = f"{free} Bytes"
+
+        return json_output("disk2", f"{pool_name}: {disk2_free}")
 
 def status_volume():
+
+    # find default audio-vm
+    vm = getattr(app, "default_audiovm", None)
+    if vm is None:
+        return status_volume_dom0()
+
+    # Check if default audio-vm running
+    if hasattr(vm, "is_running"):
+        try:
+            if not vm.is_running():
+                return json_output("audio_vm", f"{vm} not running")
+        except Exception as e:
+            return json_output("audio_vm", f"{vm} error: {e}")
+    else:
+        return json_output("audio_vm", f"{vm} missing is_running")
+
+    # Execute wpctl and convert in percentage for the bar
+    cmd = "wpctl get-volume @DEFAULT_AUDIO_SINK@"
+    shell_form = f"bash -lc {shlex.quote(cmd)}"
+
+    try:
+        try:
+            result = vm.run(shell_form, timeout=5)
+        except TypeError:
+            result = vm.run(shell_form)
+    except Exception:
+        return status_volume_dom0()
+
+    raw_output = result[0] if isinstance(result, tuple) else result
+    if isinstance(raw_output, bytes):
+        raw_output = raw_output.decode(errors="replace")
+    raw_output = str(raw_output).strip()
+
+    match = re.search(r"\d+\.?\d*", raw_output)
+    if not match:
+        return json_output("volume", "Can't extract Volume")
+
+    try:
+        value = float(match.group())
+    except ValueError:
+        return json_output("volume", "Invalid volume value")
+
+    volume_pct = round(value * 100) if value <= 1 else round(value)
+
+    if volume_pct < 25:
+        color = "#ff0000"
+    elif volume_pct < 50:
+        color = "#be6422"
+    elif volume_pct < 75:
+        color = "#898520"
+    elif volume_pct < 100:
+        color = "#328920"
+
+    return json_output("volume", f"{vm}  : {volume_pct} %", color)
+
+
+def status_volume_dom0():
     try:
         volcmd = subprocess.run(
             ["amixer", "sget", "Master"],
@@ -175,7 +267,7 @@ def status_volume():
         all_off = all(state == "off" for _, state in volume_matches)
 
         if all_off:
-            return json_output("volume", "Volume: mute")
+            return json_output("volume", "dom0: mute")
 
         # Assuming the first match with 'on' state is the required volume level
         for volume, state in volume_matches:
@@ -195,6 +287,7 @@ def main():
     qubesd_status = None
     qubes_status = None
     disk_status = None
+    disk2_status = None
     bat_status = None
     load_status = None
     volume_status = None
@@ -204,6 +297,7 @@ def main():
             try:
                 qubes_status = status_qubes()
                 disk_status = status_disk()
+                disk2_status = status_disk2()
                 # network status disabled by default as it's dangerous to run a
                 # command on an untrusted qube from dom0/adminvm
                 # net_status = status_net()
@@ -212,13 +306,12 @@ def main():
             bat_status = status_bat()
             load_status = status_load()
             volume_status = status_volume()
-
         time_status = status_time()
 
         status_list = [
-            qubesd_status,
             qubes_status,
             disk_status,
+            disk2_status,
             bat_status,
             load_status,
             volume_status,
