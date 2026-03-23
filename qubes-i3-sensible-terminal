@@ -15,13 +15,11 @@ export IFS
 # Exit on errors and unset variables
 set -eEu
 
-# Globals
 declare -r GUIVM_TERMINAL="i3-sensible-terminal"
 declare -r DOMU_TERMINAL="qubes-run-terminal"
 declare -r DOMU_CONSOLE="qvm-console-dispvm"
 
 
-# Print script usage
 print_usage()
 {
     cat << USAGE >&2
@@ -36,7 +34,6 @@ USAGE
 }
 
 
-# Main script functionality
 main() {
     # Get ID of active window
     local id
@@ -44,11 +41,9 @@ main() {
     id="${id##* }"
     declare -r id
 
-    # Extract VM name from active window props
     local vm
     vm="$(xprop -id "$id" | grep '_QUBES_VMNAME(STRING)')" || true
 
-    # Launch dom0 terminal if $vm is empty
     if test -z "$vm"
     then
         case "$arg_user" in
@@ -56,12 +51,11 @@ main() {
                 exec -- "$GUIVM_TERMINAL"
                 ;;
             *)
-                exec -- sudo -u "$arg_user" "$GUIVM_TERMINAL"
+                exec -- sudo -n -u "$arg_user" -- "$GUIVM_TERMINAL"
                 ;;
         esac
     fi
 
-    # Extract VM name from active window props for real this time
     vm="${vm#*\"}"
     vm="${vm%\"*}"
     declare -r vm
@@ -72,14 +66,13 @@ main() {
         exec -- "$DOMU_CONSOLE" -- "$vm"
     fi
 
-    # Launch terminal in VM
     if command -v qrexec-client >/dev/null
     then
         exec -- qrexec-client -e -d "$vm" -- \
             "$arg_user:QUBESRPC qubes.StartApp+$DOMU_TERMINAL $vm"
     fi
 
-    # If all else fails, just execute the service for the terminal
+    # Else, if qrexec-client can't be used (e.g. in a GUIVM), use qvm-run instead
     case "$arg_user" in
         DEFAULT)
             exec qvm-run --no-gui --service -- "$vm" qubes.StartApp+"$DOMU_TERMINAL"
@@ -91,15 +84,12 @@ main() {
 }
 
 
-# Parse commandline options
 # Adapted from https://stackoverflow.com/a/29754866
 parse_options()
 {
-    # Declare argument variables' default values
     declare -g arg_user="DEFAULT"
     declare -g arg_console=""
 
-    # Skip whole subroutine if no arguments have been provided
     if [ $# -lt 1 ]
     then
         return
@@ -165,7 +155,6 @@ parse_options()
         esac
     fi
 
-    # Make arguments read-only
     declare -gr arg_user
     declare -gr arg_console
 
