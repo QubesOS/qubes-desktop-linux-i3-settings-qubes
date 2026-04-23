@@ -1,0 +1,20 @@
+id="$(xprop -root _NET_ACTIVE_WINDOW)"
+id="${id##* }"
+vm="$(xprop -id "$id" | grep '_QUBES_VMNAME(STRING)' | awk '{print $3}' | tr -d '"')"
+#add more if you feel the need to
+browsers='librewolf|brave-browser|brave-origin-nightly|mullvad-browser|chromium|ungoogled-chromium|waterfox|vivaldi|firefox'
+#this tries to use the browser wants from user's menu items and is fast!
+#each word in $browsers is a different pattern and grep matches them against the menu items
+#also pipes it to head to make sure it doesnt run multiple browsers at the same time or breaks the command if user has more than 1 browser installed
+#if theres a match it will just run the browser using qvm-run
+browser="$(grep -m 1 -owE "$browsers" <(qvm-features $vm menu-items) | head -n1)"
+if [[ -n "$browser" ]]; then
+  echo $browser
+  qvm-run "$vm" "$browser" "$@"
+  exit 0 #success!
+fi
+#fallback to for loop which is slower
+for browser in mullvad-browser librewolf firefox torbrowser-launcher chromium brave-origin brave-browser ungoogled-chromium epiphany falkon waterfox midori qutebrowser vivaldi; do
+  # uses subshell to try to be faster makes a big difference from my tests
+  (qvm-run "$vm" which "$browser" && qvm-run "$vm" "$browser" "$@") &
+done

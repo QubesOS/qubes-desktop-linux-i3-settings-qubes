@@ -62,6 +62,7 @@ fi
 %{_bindir}/qubes-i3-sensible-terminal
 %{_bindir}/qubes-i3-xdg-autostart
 %{_bindir}/qubes-i3status
+%{_bindir}/qubes-i3-sensible-browser
 
 %changelog
 @CHANGELOG@
