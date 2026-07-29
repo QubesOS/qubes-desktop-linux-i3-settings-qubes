@@ -228,41 +228,29 @@ def main():
     print(prefix, flush=True)
 
     loop_count = 0
-    qubesd_status = None
-    qubes_status = None
-    disk_status = None
-    bat_status = None
-    load_status = None
-    volume_status = None
-    net_status = None
+    last_heavy = []
     while True:
         if loop_count % 2 == 0:
+            status_list = []
             try:
-                qubes_status = status_qubes()
-                disk_status = status_disk()
+                status_list.append(status_qubes())
+                status_list.append(status_disk())
                 # network status disabled by default as it's dangerous to run a
                 # command on an untrusted qube from an interface qube.
-                # net_status = status_net()
+                # status_list.append(status_net())
             except qadmin_exc.QubesDaemonCommunicationError:
-                qubesd_status = json_output(
+                status_list.insert(json_output(
                     "qubesd", "qubesd connection failed"
-                )
-            bat_status = status_bat()
-            load_status = status_load()
-            volume_status = status_volume()
+                ), 0)
+            status_list.append(status_bat())
+            status_list.append(status_load())
+            status_list.append(status_volume())
+            last_heavy = status_list.copy()
+        else:
+            status_list = last_heavy
 
-        time_status = status_time()
+        status_list.append(status_time())
 
-        status_list = [
-            qubesd_status,
-            qubes_status,
-            disk_status,
-            bat_status,
-            load_status,
-            volume_status,
-            time_status,
-            net_status,
-        ]
         final_status_list = [
             status for status in status_list if status is not None
         ]
