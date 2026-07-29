@@ -1,13 +1,17 @@
 #!/usr/bin/python3
+
 import re
 import time
 import json
 import subprocess
 import sys
+from asyncio import sleep, create_task, run, gather
 from pathlib import Path
 from datetime import datetime
+
 from qubesadmin import Qubes
 from qubesadmin import exc as qadmin_exc
+from qubesadmin.events import EventsDispatcher
 
 app = Qubes()
 
@@ -65,6 +69,41 @@ def status_net():
                 json_output(net_info["device_name"], net_info["info"])
             )
     return net_status
+
+
+def status_qubes():
+    """
+    Get amount of qubes that are running..
+    """
+    running_qubes = len(
+        [vm for vm in app.domains if vm.klass != "AdminVM" and vm.is_running()]
+    )
+    qube_string = "qube"
+    if running_qubes >= 2:
+        qube_string = "qubes"
+    return json_output("qubes", f"{running_qubes} {qube_string}")
+
+
+def status_disk():
+    """
+    Get amount of space in the default private pool.
+    """
+    default_pool = app.pools[app.property_get_default("default_pool_private")]
+    size = int(default_pool.size)
+    usage = int(default_pool.usage)
+    free = size - usage
+
+    if free >= 1 << 40:
+        disk_free = f"{free >> 40}T"
+    elif free >= 1 << 30:
+        disk_free = f"{free >> 30}G"
+    elif free >= 1 << 20:
+        disk_free = f"{free >> 20}M"
+    elif free >= 1 << 10:
+        disk_free = f"{free >> 10}K"
+    else:
+        disk_free = f"{free} Bytes"
+    return json_output("disk", f"Disk free: {disk_free}")
 
 
 def status_time():
@@ -145,41 +184,6 @@ def status_load():
     return json_output("load", f"Load: {load_avg}")
 
 
-def status_qubes():
-    """
-    Get amount of qubes that are running..
-    """
-    running_qubes = len(
-        [vm for vm in app.domains if vm.klass != "AdminVM" and vm.is_running()]
-    )
-    qube_string = "qube"
-    if running_qubes >= 2:
-        qube_string = "qubes"
-    return json_output("qubes", f"{running_qubes} {qube_string}")
-
-
-def status_disk():
-    """
-    Get amount of space in the default private pool.
-    """
-    default_pool = app.pools[app.property_get_default("default_pool_private")]
-    size = int(default_pool.size)
-    usage = int(default_pool.usage)
-    free = size - usage
-
-    if free >= 1 << 40:
-        disk_free = f"{free >> 40}T"
-    elif free >= 1 << 30:
-        disk_free = f"{free >> 30}G"
-    elif free >= 1 << 20:
-        disk_free = f"{free >> 20}M"
-    elif free >= 1 << 10:
-        disk_free = f"{free >> 10}K"
-    else:
-        disk_free = f"{free} Bytes"
-    return json_output("disk", f"Disk free: {disk_free}")
-
-
 def status_volume():
     """
     Get volume percentage and if muted or not.
@@ -214,9 +218,9 @@ def status_volume():
                 return json_output("volume", f"Volume: {volume}")
 
 
-def main():
+async def painter(app):
     """
-    Query basic statistics to display on i3 status bar.
+    Return JSON for the i3 status bar.
     """
     # Send the header so that i3 bar knows we want to use JSON.
     prefix = '{"version": 1}'
@@ -229,19 +233,24 @@ def main():
 
     loop_count = 0
     last_heavy = []
+    disk_status = []
     while True:
         if loop_count % 2 == 0:
             status_list = []
             try:
                 status_list.append(status_qubes())
-                status_list.append(status_disk())
+                if loop_count % 60 == 0:
+                    # Pool information isn't cached and doesn't change much.
+                    # Call it less frequently.
+                    disk_status = status_disk()
+                status_list.append(disk_status)
                 # network status disabled by default as it's dangerous to run a
                 # command on an untrusted qube from an interface qube.
                 # status_list.append(status_net())
             except qadmin_exc.QubesDaemonCommunicationError:
-                status_list.insert(json_output(
-                    "qubesd", "qubesd connection failed"
-                ), 0)
+                status_list.insert(
+                    json_output("qubesd", "qubesd connection failed"), 0
+                )
             status_list.append(status_bat())
             status_list.append(status_load())
             status_list.append(status_volume())
@@ -256,8 +265,24 @@ def main():
         ]
         print("," + json.dumps(final_status_list), flush=True)
 
-        time.sleep(1)
         loop_count += 1
+        await sleep(1)
+
+
+async def async_main():
+    dispatcher = EventsDispatcher(app)
+    tasks = [
+        create_task(dispatcher.listen_for_events()),
+        create_task(painter(app)),
+    ]
+    await gather(*tasks)
+
+
+def main():
+    """
+    Query basic statistics to display on i3 status bar.
+    """
+    run(async_main())
 
 
 if __name__ == "__main__":
