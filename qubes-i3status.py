@@ -3,6 +3,7 @@ import re
 import time
 import json
 import subprocess
+import sys
 from pathlib import Path
 from datetime import datetime
 from qubesadmin import Qubes
@@ -88,7 +89,7 @@ def status_bat():
                         charge_full = int(charge_full.read_text().strip())
                         accum_full_mWh += (voltage_now / 1000) * (charge_full / 1000)
         except Exception as e:
-            print(f"Error reading battery info: {e}")
+            print(f"Error reading battery info: {e}", file=sys.stderr)
             return
 
     if accum_full_mWh == 0:
@@ -161,7 +162,7 @@ def status_volume():
             capture_output=True,
         )
     except Exception as e:
-        print(f"Error reading volume info: {e}")
+        print(f"Error reading volume info: {e}", file=sys.stderr)
         return
 
     # Find the volume level and the on/off state
