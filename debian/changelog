@@ -1,3 +1,15 @@
+i3-settings-qubes (1.16-1) unstable; urgency=medium
+
+  [ Atrate ]
+  * Rewrite qubes-i3-sensible-terminal
+  * Add execute bits to executable files
+  * Update code comments to match the Qubes Coding Style.
+
+  [ heinrich5991 ]
+  * Print error messages to stderr in qubes-i3status.py
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Thu, 27 Aug 2026 19:45:49 +0200
+
 i3-settings-qubes (1.15-1) unstable; urgency=medium
 
   * Do not deviate from upstream for floating toggle
