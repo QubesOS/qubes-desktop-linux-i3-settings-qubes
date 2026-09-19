@@ -1,12 +1,5 @@
 #!/usr/bin/bash --posix
 
-# Set POSIX-compliant mode to make bash and certain utils more predictable.
-# Bash-specific features are still used, that's intentional
-POSIXLY_CORRECT=1
-set -o posix
-readonly POSIXLY_CORRECT
-export POSIXLY_CORRECT
-
 # Set IFS explicitly. POSIX does not enforce whether IFS should be inherited
 # from the environment, so it's safer to set it explicitly
 IFS=$' \t\n'
