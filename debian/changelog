@@ -1,3 +1,15 @@
+i3-settings-qubes (1.17-1) unstable; urgency=medium
+
+  [ Ben Grande ]
+  * Fix pylint and black error and improve netvm query
+  * Cleanup list building by using append
+  * Enable API cache
+
+  [ Atrate ]
+  * Remove POSIXLY_CORRECT vars
+
+ -- Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>  Sat, 19 Sep 2026 02:21:11 +0200
+
 i3-settings-qubes (1.16-1) unstable; urgency=medium
 
   [ Atrate ]
